@@ -13,9 +13,13 @@ def index():
 @app.route('/temperature', methods=['GET', 'POST'])
 def temperature():
     if request.method == 'POST':
+        if request.headers.get('X-API-KEY') != app.config['API_KEY']:
+            abort(401)
         if not request.json or not 'data' in request.json:
             abort(400)
         else:
+            if not request.json.get('data').get('temperature'):
+                abort(404)
             t = Temperature(temperature=request.json.get('data')['temperature'])
             db.session.add(t)
             db.session.commit()
@@ -25,11 +29,14 @@ def temperature():
 
 @app.route('/humidity', methods=['GET', 'POST'])
 def humidity():
-
     if request.method == 'POST':
+        if request.headers.get('X-API-KEY') != app.config['API_KEY']:
+            abort(401)
         if not request.json or not 'data' in request.json:
             abort(400)
         else:
+            if not request.json.get('data').get('humidity'):
+                abort(404)
             h = Humidity(humidity=request.json.get('data')['humidity'])
             db.session.add(h)
             db.session.commit()

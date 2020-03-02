@@ -10,3 +10,4 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
             "postgresql://postgres:public@localhost:25432/ictes"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    API_KEY = 'ictes710-MbedDisco'
