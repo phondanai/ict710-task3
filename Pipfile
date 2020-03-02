@@ -7,6 +7,9 @@ name = "pypi"
 Flask = "*"
 gunicorn = "*"
 python-dotenv = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
