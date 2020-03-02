@@ -16,7 +16,7 @@ def temperature():
         if not request.json or not 'data' in request.json:
             abort(400)
         else:
-            t = Temperature(humidity=request.json.get('data')['temperature'])
+            t = Temperature(temperature=request.json.get('data')['temperature'])
             db.session.add(t)
             db.session.commit()
             return jsonify({'status': 'ok'})
