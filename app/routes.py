@@ -90,24 +90,93 @@ def query(sensor_type):
         temperatures = Temperature.query.all()
         return jsonify(temperature_data=[i.serialize for i in temperatures])
 
+
+@app.route("/gen", methods=["GET"])
 @app.route("/gen/<sensor_type>", methods=["GET"])
-def gen(sensor_type):
+def gen(sensor_type="all"):
+
+    if sensor_type not in ("humidity", "temperature", "all"):
+        abort(404)
 
     def generate():
-        humidity = Humidity.query.all()
-        print(len(humidity))
-        hiter = iter(humidity)
+        sensors = Sensors.query.all()
+        datas = iter(sensors)
         yield '{"data": ['
         while True:
             try:
-                data = next(hiter)
-                yield '{"humidity":'+str(data.humidity)+'},'
+                data = next(datas)
+                if sensor_type == "all":
+                    yield '{"humidity":' + str(
+                        data.humidity
+                    ) + "," + '"temperature":' + str(
+                        data.temperature
+                    ) + "," + '"timestamp": ' + '"' + str(
+                        data.timestamp
+                    ) + '"' + "},"
+                elif sensor_type == "humidity":
+                    yield '{"humidity":' + str(
+                        data.humidity
+                    ) + "," + '"timestamp": ' + '"' + str(data.timestamp) + '"' + "},"
+                else:
+                    yield '{"temperature":' + str(
+                        data.temperature
+                    ) + "," + '"timestamp": ' + '"' + str(data.timestamp) + '"' + "},"
             except StopIteration:
-                yield '{"humidity":'+str(data.humidity)+'}'
-                break
-        yield ']}'
+                if sensor_type == "all":
+                    yield '{"humidity":' + str(
+                        data.humidity
+                    ) + "," + '"temperature":' + str(
+                        data.temperature
+                    ) + "," + '"timestamp": ' + '"' + str(
+                        data.timestamp
+                    ) + '"' + "}"
+                    break
+                elif sensor_type == "humidity":
+                    yield '{"humidity":' + str(
+                        data.humidity
+                    ) + "," + '"timestamp": ' + '"' + str(data.timestamp) + '"' + "}"
+                    break
+                else:
+                    yield '{"temperature":' + str(
+                        data.humidity
+                    ) + "," + '"timestamp": ' + '"' + str(data.timestamp) + '"' + "}"
+                    break
+        yield "]}"
 
-    return Response(generate(), content_type='application/json')
+    return Response(generate(), content_type="application/json")
+
+    # elif sensor_type == "humidity":
+
+    #    def generate():
+    #        humidity = Sensors.query.with_entities(Sensors.humidity).all()
+    #        datas = iter(humidity)
+    #        yield '{"data": ['
+    #        while True:
+    #            try:
+    #                data = next(hiter)
+    #                yield '{"humidity":' + str(data.humidity) + "},"
+    #            except StopIteration:
+    #                yield '{"humidity":' + str(data.humidity) + "}"
+    #                break
+    #        yield "]}"
+
+    #    return Response(generate(), content_type="application/json")
+
+    # def generate():
+    #    humidity = Humidity.query.all()
+    #    print(len(humidity))
+    #    hiter = iter(humidity)
+    #    yield '{"data": ['
+    #    while True:
+    #        try:
+    #            data = next(hiter)
+    #            yield '{"humidity":' + str(data.humidity) + "},"
+    #        except StopIteration:
+    #            yield '{"humidity":' + str(data.humidity) + "}"
+    #            break
+    #    yield "]}"
+
+    # return Response(generate(), content_type="application/json")
 
 
 @app.route("/update", methods=["POST"])
@@ -134,4 +203,3 @@ def update_all():
     db.session.commit()
 
     return jsonify({"status": "ok"})
-
