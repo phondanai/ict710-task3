@@ -10,12 +10,12 @@ class Temperature(db.Model):
     @property
     def serialize(self):
         return {
-            'temperature': self.temperature,
-            'tiimestamp': self.timestamp,
+            "temperature": self.temperature,
+            "tiimestamp": self.timestamp,
         }
 
     def __repr__(self):
-        return '<Temperature {}, timestamp {}>'.format(self.temperature, self.timestamp)
+        return "<Temperature {}, timestamp {}>".format(self.temperature, self.timestamp)
 
 
 class Humidity(db.Model):
@@ -26,9 +26,29 @@ class Humidity(db.Model):
     @property
     def serialize(self):
         return {
-            'humidity': self.humidity,
-            'tiimestamp': self.timestamp,
+            "humidity": self.humidity,
+            "tiimestamp": self.timestamp.isoformat(),
         }
 
     def __repr__(self):
-        return '<Humidity {}, timestamp {}>'.format(self.humidity, self.timestamp)
+        return "<Humidity {}, timestamp {}>".format(self.humidity, self.timestamp)
+
+
+class Sensors(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    humidity = db.Column(db.Float())
+    temperature = db.Column(db.Float())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    @property
+    def serialize(self):
+        return {
+            "humidity": self.humidity,
+            "temperature": self.temperature,
+            "tiimestamp": self.timestamp.isoformat(),
+        }
+
+    def __repr__(self):
+        return "<Humidity {}, Temperature {}, timestamp {}>".format(
+            self.humidity, self.temperature, self.timestamp
+        )
