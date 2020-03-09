@@ -196,7 +196,6 @@ def update_all():
         abort(404)
 
     lat, lon = get_location(request)
-    print(lat, lon)
     sensor_data = Sensors(humidity=humidity, temperature=temperature, lat=lat, lon=lon)
 
     db.session.add(sensor_data)

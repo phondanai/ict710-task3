@@ -18,4 +18,6 @@ def get_location(request):
     if data["status"] != "success":
         abort(404)
     else:
-        return data.get('lat'), data.get('lon')
+        lat = float(data.get('lat'))
+        lon = float(data.get('lon'))
+        return lat, lon
