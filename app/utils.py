@@ -4,8 +4,12 @@ import requests
 from app import app
 
 
-def get_location(remote_addr):
-    stm_ip = remote_addr
+def get_location(request):
+    if request.headers.getlist("X-Forwarded-For"):
+        stm_ip = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+        stm_ip = request.remote_addr
+
     ENDPOINT_SERVICE = "http://ip-api.com/json/"+stm_ip+"?fields=status,lat,lon,query"
     if request.headers.get("X-API-KEY") != app.config["API_KEY"]:
         abort(401)
