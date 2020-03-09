@@ -195,7 +195,7 @@ def update_all():
     if not humidity or not temperature:
         abort(404)
 
-    lat, lon = get_location(request)
+    lat, lon = get_location(request.remote_addr)
     sensor_data = Sensors(humidity=humidity, temperature=temperature, lat=lat, lon=lon)
 
     db.session.add(sensor_data)
