@@ -1,10 +1,10 @@
 import json
 
 from flask import request, url_for, jsonify, abort, Response
-import requests
 
 from app import app, db
 from app.models import Humidity, Temperature, Sensors
+from app.utils import get_location
 
 
 @app.route("/")
@@ -189,37 +189,18 @@ def update_all():
     if not request.json or not "data" in request.json:
         abort(400)
 
-    if not request.json.get("data").get("humidity"):
-        abort(404)
-    else:
-        humidity = request.json.get("data").get("humidity")
+    humidity = request.json.get("data").get("humidity")
+    temperature = request.json.get("data").get("temperature")
 
-    if not request.json.get("data").get("temperature"):
+    if not humidity or not temperature:
         abort(404)
-    else:
-        temperature = request.json.get("data").get("temperature")
 
-    sensor_data = Sensors(humidity=humidity, temperature=temperature)
+    lat, lon = get_location(request)
+    print(lat, lon)
+    sensor_data = Sensors(humidity=humidity, temperature=temperature, lat=lat, lon=lon)
 
     db.session.add(sensor_data)
     db.session.commit()
 
     return jsonify({"status": "ok"})
 
-
-@app.route("/location")
-def location():
-    stm_ip = request.remote_addr
-    ENDPOINT_SERVICE = "http://ip-api.com/json/"+stm_ip+"?fields=status,lat,lon,query"
-    if request.headers.get("X-API-KEY") != app.config["API_KEY"]:
-        abort(401)
-
-    resp = requests.get(ENDPOINT_SERVICE)
-    if resp.status_code != 200:
-        abort(404)
-
-    data = resp.json()
-    if data["status"] != "success":
-        abort(404)
-    else:
-        return "{},{}".format(data['lat'], data['lon'])
