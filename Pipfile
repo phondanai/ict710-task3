@@ -11,6 +11,8 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 psycopg2 = "*"
 requests = "*"
+keras = "*"
+tensorflow = "*"
 
 [dev-packages]
 

@@ -1,10 +1,24 @@
 import json
 
 from flask import request, url_for, jsonify, abort, Response
+import numpy as np
 
 from app import app, db
 from app.models import Humidity, Temperature, Sensors
 from app.utils import get_location
+
+
+classes = {
+    0: "Outside",
+    1: "Inside"
+}
+
+
+@app.before_first_request
+def load_model():
+    print("Loading model")
+    from keras.models import load_model
+    app.config.model = load_model(app.config.get("MODEL_FILE"))
 
 
 @app.route("/")
@@ -15,6 +29,21 @@ def index():
             "temperature": url_for("query", sensor_type="temperature", _external=True),
         }
     }
+    return jsonify(response)
+
+
+@app.route("/predict")
+def predict():
+    d1,d2,d3 = request.args.get('d1', -99),\
+               request.args.get('d2', -99),\
+               request.args.get('d3', -99)
+    all_device = np.array([[d1,d2,d3]])
+    print(all_device)
+    predicted = app.config.model.predict_classes(all_device)[0][0]
+    response = {
+        "predict": classes.get(predicted),
+    }
+
     return jsonify(response)
 
 

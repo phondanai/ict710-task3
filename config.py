@@ -11,3 +11,4 @@ class Config(object):
             "postgresql://postgres:public@localhost:25432/ictes"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     API_KEY = 'ictes710-MbedDisco'
+    MODEL_FILE = 'model.h5'
