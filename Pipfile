@@ -13,6 +13,9 @@ psycopg2 = "*"
 requests = "*"
 keras = "*"
 tensorflow = "*"
+flask-socketio = "*"
+eventlet = "*"
+paho-mqtt = "*"
 
 [dev-packages]
 
